@@ -1,6 +1,6 @@
 # weather_forcast_project
 
-A new Flutter project.
+A Weather Forcasting App, shows different parameters of weather along with hourly Temperature and next 7 days forecast.
 
 ## Getting Started
 
