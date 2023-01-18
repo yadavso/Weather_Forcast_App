@@ -208,7 +208,7 @@ class _HomePageState extends State<HomePage> {
       });
       print(place);
     }).catchError((e) {
-      debugPrint(e);
+      debugPrint(e.toString());
     });
 
     print(_currentAddress);

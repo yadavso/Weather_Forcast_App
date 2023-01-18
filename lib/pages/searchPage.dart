@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_forcast_project/helper/Api.dart';
+import 'package:weather_forcast_project/models/Geocoding_model.dart';
 import 'package:weather_forcast_project/pages/HomePage.dart';
+import 'package:weather_forcast_project/repository/common_repository.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -15,13 +18,16 @@ class _SearchPageState extends State<SearchPage> {
   TextEditingController _controller = TextEditingController();
   List<Location> addr = [];
   String? loc = '';
+  List<Results>? results = [];
+  // List<String>? history = ['no data'];
 
   _getlocation() async {
     final query = _controller.text;
     addr = await locationFromAddress(query);
+    // history!.add(query);
 
     var first = addr.first;
-    setState(() {});
+
     setState(() {
       Api.lon = addr.first.longitude;
       Api.lat = addr.first.latitude;
@@ -29,18 +35,15 @@ class _SearchPageState extends State<SearchPage> {
     print("${first.latitude} : ${first.longitude}");
   }
 
-  // Future<void> _getAddressFromLatLng() async {
-  //   await placemarkFromCoordinates(addr.first.latitude, addr.first.longitude)
-  //       .then((List<Placemark> placemarks) {
-  //     Placemark place = placemarks[0];
-  //     print(place.name);
-  //     setState(() {
-  //       loc = place.name;
-  //     });
-  //   }).catchError((e) {
-  //     debugPrint(e);
-  //   });
-  // }
+  getGeoLocation() async {
+    setState(() {
+      Api.name = _controller.text;
+    });
+    Geocoding responseModel = await get_geocoding(context);
+    results = responseModel.results;
+
+    results != null ? print(results![1].name) : print(null);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,9 +105,14 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      await _getlocation();
+                      FocusScope.of(context).unfocus();
+                      await getGeoLocation();
+                      setState(() {});
+
+                      // await _getlocation();
+                      //  await setdata();
                       // await _getAddressFromLatLng();
-                      Navigator.pop(context);
+                      //  Navigator.pop(context);
                     },
                     child: Text('Get'),
                     style: ElevatedButton.styleFrom(
@@ -115,10 +123,45 @@ class _SearchPageState extends State<SearchPage> {
                       foregroundColor: Colors.white, // <-- Splash color
                     ),
                   ),
+                  // Text('History'),
+                  Container(
+                      height: MediaQuery.of(context).size.height,
+                      child: ListView.builder(
+                        itemCount: results!.length,
+                        itemBuilder: (BuildContext context, index) => InkWell(
+                          onTap: () {
+                            setState(() {
+                              Api.lon = results![index].longitude!;
+                              Api.lat = results![index].latitude!;
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: LocationTile(
+                              results![index].name!,
+                              results![index].admin1 == null ||
+                                      results![index].admin1 ==
+                                          results![index].name
+                                  ? results![index].country!
+                                  : results![index].admin1!,
+                              results![index].longitude!,
+                              results![index].latitude!),
+                        ),
+                      ))
                 ],
               ),
             ),
           ]),
         ));
+  }
+
+  Widget LocationTile(String name, String country, double long, double lat) {
+    return ListTile(
+      leading: Icon(Icons.location_city, color: Colors.white),
+      title: Text('$name,$country', style: TextStyle(color: Colors.white)),
+      subtitle: Text(
+        '$long  $lat',
+        style: TextStyle(color: Colors.white),
+      ),
+    );
   }
 }
