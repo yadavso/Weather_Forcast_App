@@ -16,24 +16,23 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   FocusNode myfocus = FocusNode();
   TextEditingController _controller = TextEditingController();
-  List<Location> addr = [];
-  String? loc = '';
+  // List<Location> addr = [];
+  // String? loc = '';
   List<Results>? results = [];
-  // List<String>? history = ['no data'];
 
-  _getlocation() async {
-    final query = _controller.text;
-    addr = await locationFromAddress(query);
-    // history!.add(query);
-
-    var first = addr.first;
-
-    setState(() {
-      Api.lon = addr.first.longitude;
-      Api.lat = addr.first.latitude;
-    });
-    print("${first.latitude} : ${first.longitude}");
-  }
+  // _getlocation() async {
+  //   final query = _controller.text;
+  //   addr = await locationFromAddress(query);
+  //
+  //
+  //   var first = addr.first;
+  //
+  //   setState(() {
+  //     Api.lon = addr.first.longitude;
+  //     Api.lat = addr.first.latitude;
+  //   });
+  //   print("${first.latitude} : ${first.longitude}");
+  // }
 
   getGeoLocation() async {
     setState(() {
@@ -42,7 +41,7 @@ class _SearchPageState extends State<SearchPage> {
     Geocoding responseModel = await get_geocoding(context);
     results = responseModel.results;
 
-    results != null ? print(results![1].name) : print(null);
+    // results != null ? print(results![1].name) : print(null);
   }
 
   @override
@@ -94,7 +93,6 @@ class _SearchPageState extends State<SearchPage> {
                             Icons.mic,
                             color: Colors.white,
                           ),
-                          // labelText: 'Search',
                           hintText: 'Search',
                           hintStyle: TextStyle(color: Colors.white),
                           enabledBorder: OutlineInputBorder(
@@ -108,11 +106,6 @@ class _SearchPageState extends State<SearchPage> {
                       FocusScope.of(context).unfocus();
                       await getGeoLocation();
                       setState(() {});
-
-                      // await _getlocation();
-                      //  await setdata();
-                      // await _getAddressFromLatLng();
-                      //  Navigator.pop(context);
                     },
                     child: Text('Get'),
                     style: ElevatedButton.styleFrom(
