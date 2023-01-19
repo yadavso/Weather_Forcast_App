@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
     Timer.periodic(Duration(seconds: 1), (Timer t) => _getCurrentTime());
     _isSunrise();
     start();
-    super.initState();
+    //super.initState();
   }
 
   start() async {
@@ -117,6 +117,10 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       cTime = DateFormat("hh:mm:ss a").format(DateTime.now());
     });
+  }
+
+  void dispose() {
+    super.dispose();
   }
 
   String wStatus(int code) {
@@ -206,12 +210,12 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _currentAddress = place.locality;
       });
-      print(place);
+
     }).catchError((e) {
       debugPrint(e.toString());
     });
 
-    print(_currentAddress);
+   // print(_currentAddress);
   }
 
   @override

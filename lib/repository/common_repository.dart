@@ -15,8 +15,7 @@ Future<WeatherData> get_Hourly_Temp() async {
   String url = '${Api.baseUrl}latitude=${Api.lat}&longitude=${Api.lon}$temp';
   var uri = Uri.parse(url);
   var response = await http.get(uri);
-  // print(url);
-  // print(response.statusCode);
+
   if (response.statusCode == 200) {
     responseModel = WeatherData.fromJson(json.decode(response.body));
   }
@@ -24,7 +23,7 @@ Future<WeatherData> get_Hourly_Temp() async {
 }
 
 Future<Geocoding> get_geocoding(BuildContext context) async {
-  showProgressDialog(context);
+  //showProgressDialog(context);
   Geocoding? responseModel;
   String url = '${Api.gUrl}${Api.name}';
   var uri = Uri.parse(url);
@@ -33,7 +32,7 @@ Future<Geocoding> get_geocoding(BuildContext context) async {
   if (response.statusCode == 200) {
     responseModel = Geocoding.fromJson(json.decode(response.body));
   }
-  Navigator.pop(context);
+ // Navigator.pop(context);
   return responseModel!;
 }
 

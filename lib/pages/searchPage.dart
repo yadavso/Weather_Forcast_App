@@ -19,33 +19,40 @@ class _SearchPageState extends State<SearchPage> {
   // List<Location> addr = [];
   // String? loc = '';
   List<Results>? results = [];
+  double? screenHeight;
+  double? screenWidth;
 
-  // _getlocation() async {
-  //   final query = _controller.text;
-  //   addr = await locationFromAddress(query);
-  //
-  //
-  //   var first = addr.first;
-  //
-  //   setState(() {
-  //     Api.lon = addr.first.longitude;
-  //     Api.lat = addr.first.latitude;
-  //   });
-  //   print("${first.latitude} : ${first.longitude}");
-  // }
 
   getGeoLocation() async {
     setState(() {
       Api.name = _controller.text;
     });
     Geocoding responseModel = await get_geocoding(context);
-    results = responseModel.results;
-
+    try {
+      results = responseModel.results;
+    }catch(e){
+      print(e.toString());
+    }
     // results != null ? print(results![1].name) : print(null);
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+   // _controller.addListener(() {getGeoLocation();});
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the Widget is disposed
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery.of(context).size.width;
     return GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
@@ -71,13 +78,18 @@ class _SearchPageState extends State<SearchPage> {
               child: Column(
                 children: [
                   SizedBox(
-                    height: 50,
+                    height: screenHeight!*0.06,
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding:  EdgeInsets.all(screenWidth!*0.022),
                     child: TextField(
-                      focusNode: myfocus,
+                     // focusNode: myfocus,
                       controller: _controller,
+                      onChanged: (text)async {
+
+                      await  getGeoLocation();
+
+                      },
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                           focusColor: Color.fromARGB(250, 132, 99, 204),
@@ -100,27 +112,28 @@ class _SearchPageState extends State<SearchPage> {
                                   BorderSide(width: 1, color: Colors.white),
                               borderRadius: BorderRadius.circular(50.0))),
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      FocusScope.of(context).unfocus();
-                      await getGeoLocation();
-                      setState(() {});
-                    },
-                    child: Text('Get'),
-                    style: ElevatedButton.styleFrom(
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.all(20),
-                      backgroundColor: Color.fromARGB(250, 132, 99, 204),
-                      // Color.fromARGB(250, 48, 86, 232), // <-- Button color
-                      foregroundColor: Colors.white, // <-- Splash color
-                    ),
-                  ),
+                  ),SizedBox(height: screenHeight!*0.01,),
+                  // ElevatedButton(
+                  //   onPressed: () async {
+                  //     FocusScope.of(context).unfocus();
+                  //     // await getGeoLocation();
+                  //     setState(() {});
+                  //
+                  //   },
+                  //   child: Icon(Icons.search),
+                  //   style: ElevatedButton.styleFrom(
+                  //     shape: CircleBorder(),
+                  //     padding: EdgeInsets.all(screenWidth!*0.04),
+                  //     backgroundColor: Color.fromARGB(250, 132, 99, 204),
+                  //     // Color.fromARGB(250, 48, 86, 232), // <-- Button color
+                  //     foregroundColor: Colors.white, // <-- Splash color
+                  //   ),
+                  // ),
                   // Text('History'),
                   Container(
                       height: MediaQuery.of(context).size.height,
-                      child: ListView.builder(
-                        itemCount: results!.length,
+                      child: results==null?NotFoundMessage():ListView.builder(
+                        itemCount: results==null?0:results!.length,
                         itemBuilder: (BuildContext context, index) => InkWell(
                           onTap: () {
                             setState(() {
@@ -129,7 +142,7 @@ class _SearchPageState extends State<SearchPage> {
                             });
                             Navigator.pop(context);
                           },
-                          child: LocationTile(
+                          child:  LocationTile(
                               results![index].name!,
                               results![index].admin1 == null ||
                                       results![index].admin1 ==
@@ -149,12 +162,18 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget LocationTile(String name, String country, double long, double lat) {
     return ListTile(
-      leading: Icon(Icons.location_city, color: Colors.white),
+      leading: Icon(Icons.location_on_outlined, color: Colors.white),
       title: Text('$name,$country', style: TextStyle(color: Colors.white)),
       subtitle: Text(
         '$long  $lat',
         style: TextStyle(color: Colors.white),
       ),
+    );
+  }
+  Widget NotFoundMessage(){
+    return Padding(
+      padding:  EdgeInsets.only(top: screenHeight!*0.15),
+      child: Text('No Location found!',style: TextStyle(color: Colors.white,fontSize: 20),),
     );
   }
 }
