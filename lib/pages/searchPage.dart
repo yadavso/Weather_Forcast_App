@@ -87,7 +87,8 @@ class _SearchPageState extends State<SearchPage> {
                       controller: _controller,
                       onChanged: (text)async {
 
-                      await  getGeoLocation();
+
+                     await  getGeoLocation();
 
                       },
                       style: TextStyle(color: Colors.white),

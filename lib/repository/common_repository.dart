@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:weather_forcast_project/helper/Api.dart';
 import 'package:http/http.dart' as http;
-
 import '../models/Geocoding_model.dart';
 import '../models/WeatherData_model.dart';
 
