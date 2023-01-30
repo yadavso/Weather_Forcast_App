@@ -1,15 +1,18 @@
 import 'dart:async';
+
 //import 'dart:math';
 //import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:weather_forcast_project/helper/Api.dart';
 import 'package:weather_forcast_project/models/WeatherData_model.dart';
 import 'package:weather_forcast_project/pages/searchPage.dart';
+import 'package:weather_forcast_project/pages/settingsPage.dart';
 import 'package:weather_forcast_project/repository/common_repository.dart';
-import 'package:weather_forcast_project/helper/Api.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -21,6 +24,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
 
   String? _currentAddress = '';
   Position? _currentPosition;
@@ -62,21 +68,34 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // TODO: implement initState
-    // get_temp();
+
     Timer.periodic(Duration(seconds: 1), (Timer t) => _getCurrentTime());
     _isSunrise();
     start();
+
+    // locale notification
     //super.initState();
+  }
+
+  Future<void> notificationInitialize() async {
+    var initializationSettingsAndroid =
+        new AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettings =
+        new InitializationSettings(android: initializationSettingsAndroid);
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
   }
 
   start() async {
     if (Api.lat == 0.0 && Api.lon == 0.0) {
       await _getCurrentPosition();
-      get_temp();
+      await get_temp();
     } else {
-      get_temp();
+      await get_temp();
     }
     _getAddressFromLatLng();
+    // await notificationInitialize();
   }
 
   get_temp() async {
@@ -210,12 +229,43 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _currentAddress = place.locality;
       });
-
     }).catchError((e) {
       debugPrint(e.toString());
     });
 
-   // print(_currentAddress);
+    // print(_currentAddress);
+  }
+
+  // Future _showNotificationEveryMinute() async {
+  //   var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+  //       'your channel id', 'your channel name',
+  //       playSound: true, importance: Importance.high, priority: Priority.high);
+  //
+  //   var platformChannelSpecifics = new NotificationDetails(
+  //     android: androidPlatformChannelSpecifics,
+  //   );
+  //
+  //   await flutterLocalNotificationsPlugin.periodicallyShow(1, 'Temperature',
+  //       '$_temp C', RepeatInterval.everyMinute, platformChannelSpecifics);
+  // }
+
+  Future _showNotificationOnClick() async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name',
+        playSound: true, importance: Importance.high, priority: Priority.high);
+
+    var platformChannelSpecifics = new NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Todays Temperature',
+      '$_temp°C',
+      platformChannelSpecifics,
+      payload: 'No_Sound',
+    );
+
+    print('Notification displayed');
   }
 
   @override
@@ -224,6 +274,8 @@ class _HomePageState extends State<HomePage> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      key: _scaffoldState,
+      drawer: AppDrawer(),
       body: Stack(children: [
         sunrise != 'day'
             ? Container(
@@ -261,6 +313,17 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Stack(
                   children: [
+                    Positioned(
+                        child: IconButton(
+                      icon: Icon(
+                        Icons.menu,
+                        size: screenWidth! * 0.07,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        _scaffoldState.currentState!.openDrawer();
+                      },
+                    )),
                     Center(
                       child: Container(
                         width: screenWidth! * 0.79,
@@ -291,9 +354,6 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.white,
                             )))
                   ],
-                ),
-                SizedBox(
-                  height: screenHeight! * 0.02,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -519,22 +579,26 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  imageAccordingToCode(int code) {
+    if (code == 0) {
+      return ('assets/icons/${sunrise}/clear sky.png');
+    } else if (code == 1) {
+      return 'assets/icons/${sunrise}/Mainly clear.png';
+    } else if (code == 2) {
+      return 'assets/icons/${sunrise}/partly.png';
+    } else if (code == 3) {
+      return 'assets/icons/${sunrise}/overcast.png';
+    } else if (code == 45) {
+      return 'assets/icons/${sunrise}/fog.png';
+    } else {
+      return 'assets/icons/${sunrise}/clear sky.png';
+    }
+  }
+
   Widget hourly_Container(
       String temp, String time, int code, String windSpeed) {
-    String im = '';
-    if (code == 0) {
-      im = 'assets/icons/${sunrise}/clear sky.png';
-    } else if (code == 1) {
-      im = 'assets/icons/${sunrise}/Mainly clear.png';
-    } else if (code == 2) {
-      im = 'assets/icons/${sunrise}/partly.png';
-    } else if (code == 3) {
-      im = 'assets/icons/${sunrise}/overcast.png';
-    } else if (code == 45) {
-      im = 'assets/icons/${sunrise}/fog.png';
-    } else {
-      im = 'assets/icons/${sunrise}/clear sky.png';
-    }
+    var im = imageAccordingToCode(code);
+
     return Container(
         height: screenHeight! * 0.03,
         width: screenWidth! * 0.24,
@@ -559,20 +623,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget daily_Container(int code, String date, String min, String max, index) {
-    String im = '';
-    if (code == 0) {
-      im = 'assets/icons/${sunrise}/clear sky.png';
-    } else if (code == 1) {
-      im = 'assets/icons/${sunrise}/Mainly clear.png';
-    } else if (code == 2) {
-      im = 'assets/icons/${sunrise}/partly.png';
-    } else if (code == 3) {
-      im = 'assets/icons/${sunrise}/overcast.png';
-    } else if (code == 45) {
-      im = 'assets/icons/${sunrise}/fog.png';
-    } else {
-      im = 'assets/icons/${sunrise}/clear sky.png';
-    }
+    var im = imageAccordingToCode(code);
+
     return Container(
       margin: EdgeInsets.only(left: screenWidth! * 0.02),
       decoration: index == 0
@@ -610,6 +662,136 @@ class _HomePageState extends State<HomePage> {
             min,
             style: TextStyle(
                 fontSize: screenWidth! * 0.049, color: Colors.white70),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget AppDrawer() {
+    return Drawer(
+      child: Column(
+        children: [
+          Container(
+            height: screenHeight! * 0.23,
+            child: DrawerHeader(
+              curve: Curves.elasticIn,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color.fromARGB(130, 48, 86, 232),
+                  Color.fromARGB(255, 149, 80, 161),
+                ],
+              )),
+              padding: EdgeInsets.all(0),
+              child: Container(
+                  width: screenWidth! * 0.78,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        left: screenWidth! * 0.03, top: screenWidth! * 0.04),
+                    child: Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _currentAddress!,
+                              style: TextStyle(
+                                  fontSize: screenWidth! * 0.11,
+                                  color: Colors.white),
+                            ),
+                            SizedBox(
+                              height: screenHeight! * 0.01,
+                            ),
+                            Text(
+                              wStatus(_wcode),
+                              style: TextStyle(
+                                  fontSize: screenWidth! * 0.05,
+                                  color: Colors.white),
+                            ),
+                            SizedBox(
+                              height: screenHeight! * 0.01,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: screenWidth! * 0.07,
+                        ),
+                        Column(
+                          children: [
+                            Image.asset(
+                              imageAccordingToCode(_wcode),
+                              scale: screenWidth! * 0.003,
+                            ),
+                            Text(
+                              '$_temp° C',
+                              style: TextStyle(
+                                  fontSize: screenWidth! * 0.06,
+                                  color: Colors.white),
+                            ),
+                            // Row(
+                            //   children: [
+                            //     Text(
+                            //       _hWind,
+                            //       style: TextStyle(
+                            //           fontSize: screenWidth! * 0.03,
+                            //           color: Colors.white),
+                            //     ),
+                            //     SizedBox(
+                            //       width: screenWidth! * 0.01,
+                            //     ),
+                            //     Image.asset(
+                            //       'assets/icons/values/wind.png',
+                            //       scale: screenWidth! * 0.011,
+                            //       color: Colors.white,
+                            //     )
+                            //   ],
+                            // ),
+                          ],
+                        )
+                      ],
+                    ),
+                  )),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SearchPage()));
+            },
+            child: ListTile(
+              leading: Icon(Icons.search),
+              title: Text('Search'),
+            ),
+          ),
+          Divider(
+            height: 0,
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SettingPage(
+                            temp: _temp,
+                          )));
+            },
+            child: ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+            ),
+          ),
+          Divider(
+            height: 0,
+          ),
+          ListTile(
+            leading: Icon(Icons.star_border),
+            title: Text('Rate Us'),
+          ),
+          Divider(
+            height: 0,
           ),
         ],
       ),

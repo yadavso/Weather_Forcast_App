@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 import 'package:weather_forcast_project/pages/Splash_Screen.dart';
+
+
 
 void main() {
   runApp(const MyApp());

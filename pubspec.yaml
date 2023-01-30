@@ -43,6 +43,13 @@ dependencies:
   geocoding: ^2.0.5
   lottie: ^2.2.0
   shared_preferences: ^2.0.16
+  flutter_local_notifications: ^13.0.0
+  timezone: ^0.9.1
+  flutter_native_timezone: ^2.0.0
+  rxdart: ^0.27.7
+  path_provider: ^2.0.12
+  firebase_core: ^2.4.1
+  firebase_messaging: ^14.2.1
 
 
 
