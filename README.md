@@ -1,4 +1,4 @@
-# weather_forcast_project
+# weather_forcast_App
 
 A Weather Forcasting App, shows different parameters of weather along with hourly Temperature and next 7 days forecast.
 
