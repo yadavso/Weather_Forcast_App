@@ -2,15 +2,9 @@
 
 A Weather Forcasting App, shows different parameters of weather along with hourly Temperature and next 7 days forecast.
 
-## Getting Started
+## UI Images
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Screenshot_2023-01-30-10-29-49-873_com example weather_forcast_project](https://user-images.githubusercontent.com/79310659/215391536-64f51cf0-0f26-4f99-b1df-b452feb62b0e.jpg)
+![Screenshot_2023-01-30-10-30-01-058_com example weather_forcast_project](https://user-images.githubusercontent.com/79310659/215391566-5250a892-5105-4a8f-b094-9c2cdde5bdf2.jpg)
+![Screenshot_2023-01-30-10-30-24-909_com example weather_forcast_project](https://user-images.githubusercontent.com/79310659/215391572-24a29c82-17e3-4e52-b3e4-333b69e8c639.jpg)
