@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_forcast_project/helper/Api.dart';
 import 'package:weather_forcast_project/models/Geocoding_model.dart';
-import 'package:weather_forcast_project/pages/HomePage.dart';
 import 'package:weather_forcast_project/repository/common_repository.dart';
 
 class SearchPage extends StatefulWidget {
@@ -22,23 +19,25 @@ class _SearchPageState extends State<SearchPage> {
   double? screenHeight;
   double? screenWidth;
 
-
   getGeoLocation() async {
     setState(() {
       Api.name = _controller.text;
     });
     Geocoding responseModel = await get_geocoding(context);
     try {
-      results = responseModel.results;
-    }catch(e){
+      setState(() {
+        results = responseModel.results;
+      });
+    } catch (e) {
       print(e.toString());
     }
     // results != null ? print(results![1].name) : print(null);
   }
+
   @override
   void initState() {
     // TODO: implement initState
-   // _controller.addListener(() {getGeoLocation();});
+    // _controller.addListener(() {getGeoLocation();});
     super.initState();
   }
 
@@ -78,19 +77,17 @@ class _SearchPageState extends State<SearchPage> {
               child: Column(
                 children: [
                   SizedBox(
-                    height: screenHeight!*0.06,
+                    height: screenHeight! * 0.06,
                   ),
                   Padding(
-                    padding:  EdgeInsets.all(screenWidth!*0.022),
+                    padding: EdgeInsets.all(screenWidth! * 0.022),
                     child: TextField(
-                     // focusNode: myfocus,
+                      // focusNode: myfocus,
                       controller: _controller,
-                      onChanged: (text)async {
-
-
-                     await  getGeoLocation();
-
+                      onChanged: (text) async {
+                        await getGeoLocation();
                       },
+                      cursorColor: Colors.white,
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                           focusColor: Color.fromARGB(250, 132, 99, 204),
@@ -113,47 +110,36 @@ class _SearchPageState extends State<SearchPage> {
                                   BorderSide(width: 1, color: Colors.white),
                               borderRadius: BorderRadius.circular(50.0))),
                     ),
-                  ),SizedBox(height: screenHeight!*0.01,),
-                  // ElevatedButton(
-                  //   onPressed: () async {
-                  //     FocusScope.of(context).unfocus();
-                  //     // await getGeoLocation();
-                  //     setState(() {});
-                  //
-                  //   },
-                  //   child: Icon(Icons.search),
-                  //   style: ElevatedButton.styleFrom(
-                  //     shape: CircleBorder(),
-                  //     padding: EdgeInsets.all(screenWidth!*0.04),
-                  //     backgroundColor: Color.fromARGB(250, 132, 99, 204),
-                  //     // Color.fromARGB(250, 48, 86, 232), // <-- Button color
-                  //     foregroundColor: Colors.white, // <-- Splash color
-                  //   ),
-                  // ),
-                  // Text('History'),
+                  ),
+                  SizedBox(
+                    height: screenHeight! * 0.01,
+                  ),
                   Container(
                       height: MediaQuery.of(context).size.height,
-                      child: results==null?NotFoundMessage():ListView.builder(
-                        itemCount: results==null?0:results!.length,
-                        itemBuilder: (BuildContext context, index) => InkWell(
-                          onTap: () {
-                            setState(() {
-                              Api.lon = results![index].longitude!;
-                              Api.lat = results![index].latitude!;
-                            });
-                            Navigator.pop(context);
-                          },
-                          child:  LocationTile(
-                              results![index].name!,
-                              results![index].admin1 == null ||
-                                      results![index].admin1 ==
-                                          results![index].name
-                                  ? results![index].country!
-                                  : results![index].admin1!,
-                              results![index].longitude!,
-                              results![index].latitude!),
-                        ),
-                      ))
+                      child: results == null
+                          ? NotFoundMessage()
+                          : ListView.builder(
+                              itemCount: results == null ? 0 : results!.length,
+                              itemBuilder: (BuildContext context, index) =>
+                                  InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    Api.lon = results![index].longitude!;
+                                    Api.lat = results![index].latitude!;
+                                  });
+                                  Navigator.pop(context);
+                                },
+                                child: LocationTile(
+                                    results![index].name!,
+                                    results![index].admin1 == null ||
+                                            results![index].admin1 ==
+                                                results![index].name
+                                        ? results![index].country!
+                                        : results![index].admin1!,
+                                    results![index].longitude!,
+                                    results![index].latitude!),
+                              ),
+                            ))
                 ],
               ),
             ),
@@ -171,10 +157,14 @@ class _SearchPageState extends State<SearchPage> {
       ),
     );
   }
-  Widget NotFoundMessage(){
+
+  Widget NotFoundMessage() {
     return Padding(
-      padding:  EdgeInsets.only(top: screenHeight!*0.15),
-      child: Text('No Location found!',style: TextStyle(color: Colors.white,fontSize: 20),),
+      padding: EdgeInsets.only(top: screenHeight! * 0.15),
+      child: Text(
+        'No Location found!',
+        style: TextStyle(color: Colors.white, fontSize: 20),
+      ),
     );
   }
 }

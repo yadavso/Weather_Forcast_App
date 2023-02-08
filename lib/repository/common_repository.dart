@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:weather_forcast_project/helper/Api.dart';
 import 'package:http/http.dart' as http;
+import 'package:weather_forcast_project/helper/Api.dart';
+
 import '../models/Geocoding_model.dart';
 import '../models/WeatherData_model.dart';
 
@@ -25,13 +26,14 @@ Future<Geocoding> get_geocoding(BuildContext context) async {
   //showProgressDialog(context);
   Geocoding? responseModel;
   String url = '${Api.gUrl}${Api.name}';
+  print(url);
   var uri = Uri.parse(url);
   var response = await http.get(uri);
   print(response.statusCode);
   if (response.statusCode == 200) {
     responseModel = Geocoding.fromJson(json.decode(response.body));
   }
- // Navigator.pop(context);
+  // Navigator.pop(context);
   return responseModel!;
 }
 

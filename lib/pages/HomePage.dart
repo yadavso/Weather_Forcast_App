@@ -1,7 +1,7 @@
 import 'dart:async';
 
-//import 'dart:math';
-//import 'dart:ui';
+// import 'dart:math';
+// import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -232,22 +232,7 @@ class _HomePageState extends State<HomePage> {
     }).catchError((e) {
       debugPrint(e.toString());
     });
-
-    // print(_currentAddress);
   }
-
-  // Future _showNotificationEveryMinute() async {
-  //   var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-  //       'your channel id', 'your channel name',
-  //       playSound: true, importance: Importance.high, priority: Priority.high);
-  //
-  //   var platformChannelSpecifics = new NotificationDetails(
-  //     android: androidPlatformChannelSpecifics,
-  //   );
-  //
-  //   await flutterLocalNotificationsPlugin.periodicallyShow(1, 'Temperature',
-  //       '$_temp C', RepeatInterval.everyMinute, platformChannelSpecifics);
-  // }
 
   Future _showNotificationOnClick() async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
@@ -523,7 +508,7 @@ class _HomePageState extends State<HomePage> {
                   height: screenHeight! * 0.03,
                 ),
                 Container(
-                  height: screenHeight! * 0.18,
+                  height: screenHeight! * 0.19,
                   child: ListView.builder(
                       physics: BouncingScrollPhysics(),
                       //  padding:
@@ -624,7 +609,6 @@ class _HomePageState extends State<HomePage> {
 
   Widget daily_Container(int code, String date, String min, String max, index) {
     var im = imageAccordingToCode(code);
-
     return Container(
       margin: EdgeInsets.only(left: screenWidth! * 0.02),
       decoration: index == 0
@@ -686,74 +670,67 @@ class _HomePageState extends State<HomePage> {
                 ],
               )),
               padding: EdgeInsets.all(0),
-              child: Container(
-                  width: screenWidth! * 0.78,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        left: screenWidth! * 0.03, top: screenWidth! * 0.04),
-                    child: Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _currentAddress!,
-                              style: TextStyle(
-                                  fontSize: screenWidth! * 0.11,
-                                  color: Colors.white),
-                            ),
-                            SizedBox(
-                              height: screenHeight! * 0.01,
-                            ),
-                            Text(
-                              wStatus(_wcode),
-                              style: TextStyle(
-                                  fontSize: screenWidth! * 0.05,
-                                  color: Colors.white),
-                            ),
-                            SizedBox(
-                              height: screenHeight! * 0.01,
-                            ),
-                          ],
+              // child: Container(
+              //     width: screenWidth! * 0.9,
+              //     child: Padding(
+              //       padding: EdgeInsets.only(
+              //           left: screenWidth! * 0.03, top: screenWidth! * 0.04),
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        child: Text(
+                          _currentAddress!,
+                          overflow: TextOverflow.fade,
+                          maxLines: 2,
+                          softWrap: true,
+                          style: TextStyle(
+                              fontSize: screenWidth! * 0.09,
+                              color: Colors.white),
                         ),
-                        SizedBox(
-                          width: screenWidth! * 0.07,
+                        padding: EdgeInsets.only(
+                            left: screenWidth! * 0.01,
+                            top: screenHeight! * 0.015),
+                        width: screenWidth! * 0.4,
+                      ),
+                      SizedBox(
+                        height: screenHeight! * 0.01,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: screenWidth! * 0.01),
+                        child: Text(
+                          wStatus(_wcode),
+                          style: TextStyle(
+                              fontSize: screenWidth! * 0.05,
+                              color: Colors.white),
                         ),
-                        Column(
-                          children: [
-                            Image.asset(
-                              imageAccordingToCode(_wcode),
-                              scale: screenWidth! * 0.003,
-                            ),
-                            Text(
-                              '$_temp° C',
-                              style: TextStyle(
-                                  fontSize: screenWidth! * 0.06,
-                                  color: Colors.white),
-                            ),
-                            // Row(
-                            //   children: [
-                            //     Text(
-                            //       _hWind,
-                            //       style: TextStyle(
-                            //           fontSize: screenWidth! * 0.03,
-                            //           color: Colors.white),
-                            //     ),
-                            //     SizedBox(
-                            //       width: screenWidth! * 0.01,
-                            //     ),
-                            //     Image.asset(
-                            //       'assets/icons/values/wind.png',
-                            //       scale: screenWidth! * 0.011,
-                            //       color: Colors.white,
-                            //     )
-                            //   ],
-                            // ),
-                          ],
-                        )
-                      ],
-                    ),
-                  )),
+                      ),
+                      SizedBox(
+                        height: screenHeight! * 0.01,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: screenWidth! * 0.07,
+                  ),
+                  Column(
+                    children: [
+                      Image.asset(
+                        imageAccordingToCode(_wcode),
+                        scale: screenWidth! * 0.003,
+                      ),
+                      Text(
+                        '$_temp° C',
+                        style: TextStyle(
+                            fontSize: screenWidth! * 0.06, color: Colors.white),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              // )),
             ),
           ),
           InkWell(

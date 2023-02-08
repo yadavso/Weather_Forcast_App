@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         },
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
+          title: 'Maosam',
           theme: ThemeData(
             fontFamily: 'NanumGothic',
             primarySwatch: Colors.blue,
